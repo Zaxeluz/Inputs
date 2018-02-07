@@ -17,17 +17,58 @@ GLFWwindow *window;
 GLfloat red, green, blue;
 GLfloat ty = 0.0f;
 GLfloat tx = 0.0f;
+GLfloat angulo = 0.0f;
+
+double tiempoAnterior = 0.0f;
+double velocidad = 0.1f;
 
 void actualizar() { 
 	//Aquí esta bien para cambiar los valores
 	//De las variables de mi programa!
+	double tiempoActual = glfwGetTime();
+	double tiempoTranscurrido = 
+		tiempoActual - tiempoAnterior;
 	
 	int estadoArriba = glfwGetKey(window, GLFW_KEY_UP);
 	if (estadoArriba == GLFW_PRESS) {
 		if (ty < 1)
-			ty += 0.05f;
+			ty += velocidad * tiempoTranscurrido;
 	}
 
+	int estadoAbajo = glfwGetKey(window, GLFW_KEY_DOWN);
+	if (estadoAbajo == GLFW_PRESS) {
+		if (ty > -1)
+			ty -= velocidad * tiempoTranscurrido;
+	}
+
+	int estadoDerecha = glfwGetKey(window, GLFW_KEY_RIGHT);
+	if (estadoDerecha == GLFW_PRESS) {
+		/*if (tx < 1)
+			tx += velocidad * tiempoTranscurrido;*/
+
+		if (angulo < 360) {
+			angulo += 0.01;
+		}
+		else
+		{
+			angulo = 0;
+		}
+	}
+
+	int estadoIzquierda = glfwGetKey(window, GLFW_KEY_LEFT);
+	if (estadoIzquierda == GLFW_PRESS) {
+		/*if (tx > -1)
+			tx -= velocidad * tiempoTranscurrido;*/
+		if (angulo < 360) {
+			angulo -= 0.01;
+		}
+		else
+		{
+			angulo = 0;
+		}
+	}
+
+	tiempoAnterior = tiempoActual;
 
 }
 
@@ -36,6 +77,7 @@ void dibujar() {
 	glTranslatef(tx, ty, 0.0f);
 	glScalef(0.08f, 0.08f, 0.08f);
 	glBegin(GL_TRIANGLES); //Inicia la rutina con un modo de dibujo
+	glRotatef(angulo, 0.0f, 0.0f, 1.0f); //Afecta eje z
 	glColor3f(1.0f, 0.0f, 1.0f);
 	glVertex3f(-1.0f, -0.5f, 0.0f);
 	glVertex3f(0.0f, 0.5f, 0.0f);
@@ -115,6 +157,8 @@ int main()
 	red = green = blue = 0.0f;
 
 	//glfwSetKeyCallback(window, key_callback);
+
+	tiempoAnterior = glfwGetTime();
 
 	//Ciclo de dibujo
 	while (!glfwWindowShouldClose(window)) {
